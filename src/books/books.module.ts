@@ -6,9 +6,11 @@ import { DatabaseModule } from 'src/database/database.module';
 import { AuthorsModule } from 'src/authors/authors.module';
 import { RedisModule } from 'src/redis/redis.module';
 import { JobsModule } from 'src/jobs/jobs.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     RedisModule,
     JobsModule,
     DatabaseModule,
