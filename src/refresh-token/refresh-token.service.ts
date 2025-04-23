@@ -10,8 +10,7 @@ export class RefreshTokenService {
 
     constructor(
       @Inject("DATA_SOURCE") private readonly dataSource: DataSource,
-      @Inject("REFRESH_TOKEN_REPOSITORY") private refreshTokenRepository: Repository<RefreshTokenEntity>,
-      private readonly roleService: RolesService
+      @Inject("REFRESH_TOKEN_REPOSITORY") private refreshTokenRepository: Repository<RefreshTokenEntity>
     ){}
 
 
