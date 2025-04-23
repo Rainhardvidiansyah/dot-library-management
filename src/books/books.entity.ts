@@ -1,5 +1,6 @@
 import { AuthorsEntity } from "src/authors/entities/author.entity";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BorrowingsEntity } from "src/borrowings/entities/borrowings.entity";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('books')
 export class BooksEntity{
@@ -41,6 +42,9 @@ export class BooksEntity{
 
   @ManyToMany(() => AuthorsEntity, (author) => author.books)
   authors: AuthorsEntity[];
+
+  @OneToMany(() => BorrowingsEntity, (borrowing) => borrowing.book)
+  borrowings: BorrowingsEntity[];
 
   @CreateDateColumn({
     name: "created_at"

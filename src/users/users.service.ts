@@ -16,6 +16,16 @@ export class UsersService {
     private readonly roleService: RolesService
   ) {}
 
+
+  //FInd User By Id
+  async findUserById(id: number): Promise<UsersEntity>{
+    const user = await this.userRepository.findOne({
+      where: {id: id}
+    });
+    return user;
+  }
+
+
   //Find user by email
   async isEmailAvailable(email: string): Promise<boolean> {
 

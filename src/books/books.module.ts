@@ -17,6 +17,7 @@ import { JobsModule } from 'src/jobs/jobs.module';
   providers: [
     ...bookProviders,
     BooksService],
-  controllers: [BooksController]
+  controllers: [BooksController],
+  exports: [BooksService]
 })
 export class BooksModule {}

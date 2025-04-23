@@ -22,6 +22,13 @@ export class BooksService {
   ){ }
 
 
+  async findBookById(id: number): Promise<BooksEntity>{
+    const book = await this.bookRepository.findOne({
+      where: {id: id},
+    });
+    return book;
+  }
+
   async saveBook(bookDto: CreateBookDto): Promise<BooksEntity>{
     this.logger.debug(`Start transaction in saving books and authors`)
     const queryRunner = await this.dataSource.createQueryRunner();
