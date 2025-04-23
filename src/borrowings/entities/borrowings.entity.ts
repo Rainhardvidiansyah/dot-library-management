@@ -1,4 +1,4 @@
-import { BooksEntity } from "src/books/books.entity";
+import { BooksEntity } from "src/books/entities/books.entity";
 import { User } from "src/common/decorators/user.decorator";
 import { UsersEntity } from "src/users/entities/users.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";

@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { AuthorsEntity } from './entities/author.entity';
-import { BooksEntity } from 'src/books/books.entity';
+import { BooksEntity } from 'src/books/entities/books.entity';
 
 @Injectable()
 export class AuthorsService {

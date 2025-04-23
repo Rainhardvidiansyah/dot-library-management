@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { privateDecrypt } from 'crypto';
 import { DataSource, Repository } from 'typeorm';
-import { BooksEntity } from './books.entity';
+import { BooksEntity } from './entities/books.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { AuthorsService } from 'src/authors/authors.service';
 import { AuthorsEntity } from 'src/authors/entities/author.entity';
