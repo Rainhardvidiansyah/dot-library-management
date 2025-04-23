@@ -35,4 +35,15 @@ export class BorrowingsService {
     return savedBook;
   }
 
+
+  async findBorrowedBooksByUser(userId: number){
+    const books = await this.borrowingRepository.find({
+      where: { user: {id: userId}},
+      relations: ['book'],
+      order: { borrowedAt: 'desc'}
+    })
+
+    return books;
+  }
+
 }

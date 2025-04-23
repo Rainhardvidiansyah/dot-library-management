@@ -1,4 +1,4 @@
-import { Controller, Logger, Param, Post, Res } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Post, Res } from '@nestjs/common';
 import { User } from 'src/common/decorators/user.decorator';
 import { BorrowingsService } from './borrowings.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -28,6 +28,13 @@ export class BorrowingsController {
       message: 'User just borrow a book',
       book_title: borrowedBook.book.title
     });
+  }
+
+  @Get('me')
+  @Roles('MEMBER', 'ADMIN')
+  async getAllBorrowedBooksByUser(@User() user){
+    const userId = user.id;
+    return await this.borrowService.findBorrowedBooksByUser(userId);
   }
 
 }
