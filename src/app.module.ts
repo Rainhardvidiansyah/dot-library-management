@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JWTAuthGuard } from './common/guards/jwt-auth.guards';
 import { JwtModule } from '@nestjs/jwt';
 import { RefreshTokenModule } from './refresh-token/refresh-token.module';
+import { RolesGuard } from './common/guards/role.guards';
 
 @Module({
   imports: [
@@ -34,8 +35,11 @@ import { RefreshTokenModule } from './refresh-token/refresh-token.module';
     {
       provide: APP_GUARD,
       useClass: JWTAuthGuard
-
     },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard
+    }
   ],
 })
 export class AppModule {}
