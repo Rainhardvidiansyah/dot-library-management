@@ -62,8 +62,7 @@ export class UsersService {
   async Login(email: string, password: string): Promise<UsersEntity> {
 
     const user = await this.userRepository.findOne({
-      where: {email},
-      relations: ['roles']
+      where: {email}
     })
 
     if (!user) {

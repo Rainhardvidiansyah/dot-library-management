@@ -24,10 +24,9 @@ export class AuthenticationService {
 
 
   //GENERATE JWT TOKEN
-  async generateToken(id: number, email: string, role: any): Promise<{ access_token: string } > {
+  async generateToken(id: number, email: string, role: any[]): Promise<{ access_token: string } > {
 
-    const payload = {id: id, email: email, role: role };
-		this.logger.debug({role: payload.role});
+    const payload = { id: id, email: email, role: role };
 
     const generatedToken = await this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>("JWT_ACCESS_TOKEN"),
@@ -43,11 +42,11 @@ export class AuthenticationService {
 
 
     //CREATE A METHOD TO GENERATE REFRESH TOKEN
-    async generateRefreshToken(id: number, email: string, role: any): Promise< {refresh_token: string} > {
+    async generateRefreshToken(id: number, email: string, role: any[]): Promise< {refresh_token: string} > {
 
       const payload = { id: id, email: email, role: role };
 
-      this.logger.log(JSON.stringify(payload, null, 2));
+      this.logger.debug(JSON.stringify(payload, null, 2));
 
       const generatedToken = await this.jwtService.signAsync(payload, 
       {
@@ -61,7 +60,7 @@ export class AuthenticationService {
   }
 
   //request -> get cookies -> if it is true --> then generate new Token
-  async decodeToken(token: string): Promise<{ id: number; email: string, role: any }> {
+  async decodeToken(token: string): Promise<{ id: number; email: string, role: any[] }> {
 		
     try{
         const decodedToken = await this.jwtService.verify(token,
@@ -69,9 +68,13 @@ export class AuthenticationService {
             secret: this.configService.get<string>("JWT_REFRESH_TOKEN"),
         }
       )
+
+      this.logger.warn(`DECODED TOKEN: ${decodedToken}`)
 		
 			const {id, email, role} = decodedToken;
+
 			this.logger.log(`email in decoded token method: ${email}`)
+      
 			return {id, email, role};
 
     }catch(error){

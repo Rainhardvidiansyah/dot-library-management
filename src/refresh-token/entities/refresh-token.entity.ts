@@ -15,7 +15,7 @@ export class RefreshTokenEntity{
     })
     token: string;
 
-    @ManyToOne(() => UsersEntity, (user) => user.refreshToken, { eager: false, cascade: false })
+    @ManyToOne(() => UsersEntity, (user) => user.refreshToken, { eager: true })
     @JoinColumn({ name: 'user_id'})
     user: UsersEntity;
 

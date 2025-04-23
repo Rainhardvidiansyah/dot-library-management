@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
+import { UsersEntity } from "src/users/entities/users.entity";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToMany } from "typeorm";
 
 @Entity({name: "roles"})
 export class RolesEntity {
@@ -15,6 +16,9 @@ export class RolesEntity {
       //enum: ["ADMIN", "READER", "AUTHOR"] // or any other roles you want to support
     })
     roleName: string;
+
+    @ManyToMany(() => UsersEntity, (user) => user.roles)
+    users: UsersEntity[];
 
     @CreateDateColumn({
         name: "created_at"
