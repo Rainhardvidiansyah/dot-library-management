@@ -5,11 +5,13 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RefreshTokenModule } from 'src/refresh-token/refresh-token.module';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
     UsersModule,
     RefreshTokenModule,
+    RolesModule,
 
     JwtModule.registerAsync({
       imports: [ConfigModule],
