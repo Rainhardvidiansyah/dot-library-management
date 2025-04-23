@@ -14,6 +14,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 import { RolesGuard } from './common/guards/role.guards';
 import { AuthorsModule } from './authors/authors.module';
+import { RedisModule } from './redis/redis.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { AuthorsModule } from './authors/authors.module';
     JwtModule,
     RefreshTokenModule,
     AuthorsModule,
+    RedisModule,
+    JobsModule,
   ],
   controllers: [AppController],
   providers: [

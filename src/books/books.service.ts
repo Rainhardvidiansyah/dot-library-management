@@ -5,6 +5,8 @@ import { BooksEntity } from './books.entity';
 import { CreateBookDto } from './dto/create-book.dto';
 import { AuthorsService } from 'src/authors/authors.service';
 import { AuthorsEntity } from 'src/authors/entities/author.entity';
+import Redis from 'ioredis';
+import { JobsService } from 'src/jobs/jobs.service';
 
 @Injectable()
 export class BooksService {
@@ -14,6 +16,8 @@ export class BooksService {
   constructor(
     @Inject('DATA_SOURCE') private readonly dataSource: DataSource,
     @Inject('BOOK_REPOSITORY') private readonly bookRepository: Repository<BooksEntity>, 
+    @Inject('REDIS_CLIENT') private readonly redisClient: Redis,
+    private readonly jobService: JobsService,
     private readonly authorService: AuthorsService
   ){ }
 
@@ -33,6 +37,7 @@ export class BooksService {
       });
       const savedAuthor = await queryRunner.manager.save(AuthorsEntity, author);
       authors.push(savedAuthor);
+      await this.jobService.addNewJob({author: savedAuthor.authorName});
     }
     
 
@@ -58,12 +63,25 @@ export class BooksService {
 
 
 async findBooksByAuthorName(authorName: string): Promise<BooksEntity[]> {
-  return await this.dataSource
+
+  const cacheKey = `books_by_author_${authorName}`;
+
+    const cachedData = await this.redisClient.get(cacheKey);
+    this.logger.debug(`CACHED DATA: ${cachedData}`);
+    if (cachedData) {
+      return JSON.parse(cachedData);
+    }
+
+  const books =  await this.dataSource
     .getRepository(BooksEntity)
     .createQueryBuilder('book')
     .innerJoinAndSelect('book.authors', 'author')
     .where('author.authorName LIKE :authorName', { authorName: `%${authorName}%` })
     .getMany();
+    
+    await this.redisClient.set(cacheKey, JSON.stringify(books), 'EX', 300); //Five minutes ttl 
+    
+    return books;
 }
 
 }
