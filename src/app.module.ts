@@ -13,6 +13,7 @@ import { JWTAuthGuard } from './common/guards/jwt-auth.guards';
 import { JwtModule } from '@nestjs/jwt';
 import { RefreshTokenModule } from './refresh-token/refresh-token.module';
 import { RolesGuard } from './common/guards/role.guards';
+import { AuthorsModule } from './authors/authors.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RolesGuard } from './common/guards/role.guards';
     RolesModule,
     JwtModule,
     RefreshTokenModule,
+    AuthorsModule,
   ],
   controllers: [AppController],
   providers: [
