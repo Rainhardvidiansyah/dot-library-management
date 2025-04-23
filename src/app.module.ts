@@ -16,6 +16,7 @@ import { RolesGuard } from './common/guards/role.guards';
 import { AuthorsModule } from './authors/authors.module';
 import { RedisModule } from './redis/redis.module';
 import { JobsModule } from './jobs/jobs.module';
+import { BorrowingsModule } from './borrowings/borrowings.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { JobsModule } from './jobs/jobs.module';
     AuthorsModule,
     RedisModule,
     JobsModule,
+    BorrowingsModule,
   ],
   controllers: [AppController],
   providers: [
