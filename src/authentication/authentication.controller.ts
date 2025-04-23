@@ -10,6 +10,7 @@ import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserActiveGuard } from 'src/common/guards/user-active.guards';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums/user-role.enum';
+import { RolesService } from 'src/roles/roles.service';
 
 @ApiTags('AUTHENTICATION')
 @Controller('api/v1/authentication')
@@ -20,7 +21,9 @@ export class AuthenticationController {
   constructor(
     private readonly userService: UsersService,
     private readonly authService: AuthenticationService,
-    private readonly refreshTokenService: RefreshTokenService
+    private readonly refreshTokenService: RefreshTokenService,
+    private readonly roleService: RolesService
+
   ){}
 
   //REGISTRATION
@@ -53,13 +56,16 @@ export class AuthenticationController {
     if(!user){
       throw new NotFoundException("User doesn't exist");
     }
-    const role = user.roles;
-    this.logger.log(`Retrieved roles: ${role}`)
 
-    const token = await this.authService.generateToken(user.id, user.email, role);
+    const rolesData = await this.roleService.findRolesByUsersId(user.id);
+    console.log(rolesData);
+    const stringify = JSON.stringify(rolesData, null, 2);
+    console.error(`Stringify: ${stringify}`);
+
+    const token = await this.authService.generateToken(user.id, user.email, rolesData);
     this.logger.log(`Access token ${token.access_token}`);
 
-    const refreshToken = await this.authService.generateRefreshToken(user.id, user.email, role);
+    const refreshToken = await this.authService.generateRefreshToken(user.id, user.email, rolesData);
 
     await this.refreshTokenService.saveRefreshToken(refreshToken.refresh_token, user);
 
@@ -73,6 +79,7 @@ export class AuthenticationController {
     .json({
         data: {email: user.email},
         Message: 'user is successfully logged in',
+        Roles: rolesData,
         Token: token.access_token
     })
   }
