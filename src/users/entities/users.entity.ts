@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { BorrowingsEntity } from 'src/borrowings/entities/borrowings.entity';
 import { RefreshTokenEntity } from 'src/refresh-token/entities/refresh-token.entity';
 import { RolesEntity } from 'src/roles/entities/roles.entity';
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
@@ -28,7 +29,7 @@ export class UsersEntity {
   @Column({ 
     name: "is_active",
     default: false })
-isActive: boolean;
+  isActive: boolean;
 
   @ManyToMany(() => RolesEntity)
   @JoinTable({
@@ -46,6 +47,9 @@ isActive: boolean;
 
   @OneToMany(() => RefreshTokenEntity, (refreshToken) => refreshToken.user, { onDelete: "CASCADE" } )
   refreshToken: RefreshTokenEntity[];
+
+  @OneToMany(() => BorrowingsEntity, (borrowing) => borrowing.user)
+  borrowings: BorrowingsEntity[];
 
   @CreateDateColumn({
     name: "created_at"
