@@ -1,0 +1,14 @@
+name: Greeting with the devs
+
+on:
+  pull_request:
+    branches:
+      - development
+      
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Hello, dev
+      run: echo "This an act of doing pull request"
