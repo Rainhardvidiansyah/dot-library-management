@@ -1,13 +1,18 @@
 import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersEntity } from 'src/users/entities/users.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { RefreshTokenEntity } from './entities/refresh-token.entity';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class RefreshTokenService {
   private logger = new Logger(RefreshTokenService.name);
 
-    constructor(@Inject("REFRESH_TOKEN_REPOSITORY") private refreshTokenRepository: Repository<RefreshTokenEntity>){}
+    constructor(
+      @Inject("DATA_SOURCE") private readonly dataSource: DataSource,
+      @Inject("REFRESH_TOKEN_REPOSITORY") private refreshTokenRepository: Repository<RefreshTokenEntity>,
+      private readonly roleService: RolesService
+    ){}
 
 
     //REFRESH TOKEN SERVICE - SAVE REFRESH TOKEN    
@@ -16,13 +21,17 @@ export class RefreshTokenService {
       this.logger.debug(`User email when user is going to be saved in refresh token table ${user.email}`);
       
       try{
+        const newUser = new UsersEntity();
+        newUser.id = user.id;
+        newUser.email = user.email;
+
         const refreshToken = this.refreshTokenRepository.create({
           token,
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          user: { id: user.id } as UsersEntity,
+          user: newUser
         });
     
-        const savedRefreshToken = await this.refreshTokenRepository.save(refreshToken);
+        const savedRefreshToken = await this.refreshTokenRepository.save(refreshToken, {reload: true});
         this.logger.log("Saved refresh token:", savedRefreshToken);
 
         return savedRefreshToken;
