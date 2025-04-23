@@ -3,7 +3,7 @@ import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { Public } from 'src/common/decorators/public.decorator';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @ApiTags('BOOKS')
 @Controller('api/v1/books')
@@ -24,7 +24,7 @@ export class BooksController {
     description: 'Json structure for Book object',
     })
   @Post('/save')
-  @Public()
+  @Roles('LIBRARIAN')
   async saveBook(@Body() bookDto: CreateBookDto, @Res() res){
     await this.bookService.saveBook(bookDto)
     res.status(201).json({
@@ -39,5 +39,13 @@ export class BooksController {
     this.logger.debug(`Author name: ${authorName}`)
     return await this.bookService.findBooksByAuthorName(authorName);
   }
+
+  @Get()
+  @Roles('MEMBER', 'LIBRARIAN')
+  //access like this in case I forget: localhost:3000/api/v1/books?query=hegel
+  async getBooksFromGoogleAPi(@Query('query') query: string){
+    return await this.bookService.searchGoogleBooks(query)
+  }
+
 
 }

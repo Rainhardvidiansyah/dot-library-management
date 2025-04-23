@@ -7,6 +7,8 @@ import { AuthorsService } from 'src/authors/authors.service';
 import { AuthorsEntity } from 'src/authors/entities/author.entity';
 import Redis from 'ioredis';
 import { JobsService } from 'src/jobs/jobs.service';
+import { HttpService } from '@nestjs/axios';
+import { map } from 'rxjs';
 
 @Injectable()
 export class BooksService {
@@ -18,6 +20,7 @@ export class BooksService {
     @Inject('BOOK_REPOSITORY') private readonly bookRepository: Repository<BooksEntity>, 
     @Inject('REDIS_CLIENT') private readonly redisClient: Redis,
     private readonly jobService: JobsService,
+    private readonly httpService: HttpService,
     private readonly authorService: AuthorsService
   ){ }
 
@@ -89,6 +92,27 @@ async findBooksByAuthorName(authorName: string): Promise<BooksEntity[]> {
     await this.redisClient.set(cacheKey, JSON.stringify(books), 'EX', 300); //Five minutes ttl 
     
     return books;
+}
+
+
+async searchGoogleBooks(query: string): Promise<any[]> {
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`;
+
+  return this.httpService.get(url).pipe(
+    map((response) => {
+      return response.data.items.map((item) => {
+        const info = item.volumeInfo;
+        return {
+          title: info.title,
+          authors: info.authors,
+          publishedDate: info.publishedDate,
+          description: info.description,
+          thumbnail: info.imageLinks?.thumbnail,
+          isbn: info.industryIdentifiers?.[0]?.identifier || null,
+        };
+      });
+    })
+  ).toPromise();
 }
 
 }
