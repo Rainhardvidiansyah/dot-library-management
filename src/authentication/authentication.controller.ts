@@ -8,6 +8,8 @@ import { User } from 'src/common/decorators/user.decorator';
 import { RefreshTokenService } from 'src/refresh-token/refresh-token.service';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserActiveGuard } from 'src/common/guards/user-active.guards';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { UserRole } from 'src/common/enums/user-role.enum';
 
 @ApiTags('AUTHENTICATION')
 @Controller('api/v1/authentication')
@@ -141,6 +143,7 @@ export class AuthenticationController {
   }
 
   @Get('/me')
+  @Roles(UserRole.LIBRARIAN)
   @UseGuards(UserActiveGuard)
   async getMe(@User() user){
     this.logger.log('Get me method is hit');
