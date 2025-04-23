@@ -58,14 +58,13 @@ export class AuthenticationController {
     }
 
     const rolesData = await this.roleService.findRolesByUsersId(user.id);
-    console.log(rolesData);
-    const stringify = JSON.stringify(rolesData, null, 2);
-    console.error(`Stringify: ${stringify}`);
+    const roleName = rolesData.map(a => a.role_name);
 
-    const token = await this.authService.generateToken(user.id, user.email, rolesData);
+    const token = await this.authService.generateToken(user.id, user.email, roleName);
     this.logger.log(`Access token ${token.access_token}`);
 
-    const refreshToken = await this.authService.generateRefreshToken(user.id, user.email, rolesData);
+
+    const refreshToken = await this.authService.generateRefreshToken(user.id, user.email, roleName);
 
     await this.refreshTokenService.saveRefreshToken(refreshToken.refresh_token, user);
 
@@ -100,15 +99,16 @@ export class AuthenticationController {
 
     const userId = decodedToken.id;
     const validateToken = await this.refreshTokenService.validateRefreshToken(token, userId);
+    const role = decodedToken.role;
+    console.warn(`ROLE DECODED TOKEN: ${role}`)
    
     
     const newAccessToken = await this.authService
                           .generateToken(
                           validateToken.user.id,
                           validateToken.user.email,
-                          validateToken.user.roles);
+                          role);
 
-    this.logger.warn(`User's new access_token: ${newAccessToken.access_token}`);
 
     res.status(200).json({
       "New access token": newAccessToken.access_token
@@ -149,13 +149,24 @@ export class AuthenticationController {
     return this.userService.findAllUser();
   }
 
-  @Get('/me')
-  @Roles(UserRole.LIBRARIAN)
-  @UseGuards(UserActiveGuard)
-  async getMe(@User() user){
+  @Get('librarian')
+  @Roles('LIBRARIAN')
+  //@UseGuards(UserActiveGuard)
+  async librarianResource(@User() user){
     this.logger.log('Get me method is hit');
     this.logger.log(`User id: ${user.id}`);
+    this.logger.log(`User id: ${user.email}`);
+    return user;
+  }
+
+
+  @Get('member')
+  @Roles('MEMBER')
+  //@UseGuards(UserActiveGuard)
+  async memberResource(@User() user){
+    this.logger.log('Get me method is hit');
     this.logger.log(`User id: ${user.id}`);
+    this.logger.log(`User id: ${user.email}`);
     return user;
   }
 }
