@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, ObjectLiteral, Repository } from 'typeorm';
 import { RolesEntity } from './entities/roles.entity';
 
 @Injectable()
@@ -37,20 +37,31 @@ export class RolesService {
   }
 
 
-  async findRolesByUsersId(userId: number): Promise<RolesEntity[]>{
+  async findRolesByUsersId(userId: number){
     try {
-      const rolesData = await this.dataSource
-      .createQueryBuilder()
-      .select('r.role_name', 'role_name')
-      .from('user_roles', 'ur')
-      .innerJoin('roles', 'r', 'ur.role_id = r.id')
-      .innerJoin('users', 'u', 'ur.user_id = u.id')
-      .where('u.id = :userId', { userId })
-      .getRawMany();
 
-      this.logger.debug(rolesData);
+    /*
+    SELECT 
+    r.role_name AS role_name
+    FROM roles r
+    JOIN user_roles ur on r.id = ur.role_id
+    JOIN users u ON u.id = ur.user_id
+    WHERE u.id = ?;
+    */
+    const rolesData = await this
+    .dataSource
+    .createQueryBuilder()
+    .select('r.role_name', 'role_name')
+    .from('roles', 'r')
+    .innerJoin('user_roles', 'ur', 'r.id = ur.role_id')
+    .innerJoin('users', 'u', 'u.id = ur.user_id')
+    .where('u.id = :userId', { userId })
+    .getRawMany();
+    
+    
+    this.logger.debug(`ROLES DATA: ${rolesData}`);
 
-      return rolesData;
+    return rolesData;
 
     } catch (error) {
       if(error instanceof Error){
@@ -70,4 +81,5 @@ export class RolesService {
   findOne(id: number) {
     return `This action returns a #${id} rolesModule`;
   }
+
 }
