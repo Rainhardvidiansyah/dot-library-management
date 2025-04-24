@@ -7,9 +7,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { User } from 'src/common/decorators/user.decorator';
 import { RefreshTokenService } from 'src/refresh-token/refresh-token.service';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserActiveGuard } from 'src/common/guards/user-active.guards';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
 import { RolesService } from 'src/roles/roles.service';
 
 @ApiTags('AUTHENTICATION')
@@ -76,10 +74,9 @@ export class AuthenticationController {
     })
     .status(200)
     .json({
-        data: {email: user.email},
-        Message: 'user is successfully logged in',
-        Roles: rolesData,
-        Token: token.access_token
+      Message: 'user is successfully logged in',
+      data: {email: user.email, roles: roleName},
+      Token: token.access_token
     })
   }
 
@@ -145,17 +142,17 @@ export class AuthenticationController {
 
 
   @Get()
+  @Roles('ADMIN')
   async getData(){
     return this.userService.findAllUser();
   }
 
   @Get('librarian')
   @Roles('LIBRARIAN')
-  //@UseGuards(UserActiveGuard)
   async librarianResource(@User() user){
-    this.logger.log('Get me method is hit');
+    this.logger.log('librarian Resource method is hit');
     this.logger.log(`User id: ${user.id}`);
-    this.logger.log(`User id: ${user.email}`);
+    this.logger.log(`User email: ${user.email}`);
     return user;
   }
 
@@ -164,9 +161,17 @@ export class AuthenticationController {
   @Roles('MEMBER')
   //@UseGuards(UserActiveGuard)
   async memberResource(@User() user){
-    this.logger.log('Get me method is hit');
+    this.logger.log('Member Resource method is hit');
     this.logger.log(`User id: ${user.id}`);
-    this.logger.log(`User id: ${user.email}`);
+    this.logger.log(`User email: ${user.email}`);
+    return user;
+  }
+
+  @Get('admin-librarian')
+  @Roles('ADMIN', 'LIBRARIAN')
+  async librarianAndAdminResource(@User() user){
+    this.logger.log(`Librarian and Admin resource is hit`);
+    this.logger.log(`User email who accesses this resource ${user.email}`);
     return user;
   }
 }
