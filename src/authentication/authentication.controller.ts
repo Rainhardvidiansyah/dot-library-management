@@ -6,11 +6,12 @@ import { LoginRequestDto } from './dto/login-request.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { User } from 'src/common/decorators/user.decorator';
 import { RefreshTokenService } from 'src/refresh-token/refresh-token.service';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesService } from 'src/roles/roles.service';
 
 @ApiTags('AUTHENTICATION')
+@ApiBearerAuth("access_token")
 @Controller('api/v1/authentication')
 export class AuthenticationController {
 
