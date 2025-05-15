@@ -14,7 +14,14 @@ async function bootstrap() {
   .setTitle('DOT Library')
   .setDescription('Library Path Description')
   .setVersion('1.0')
-  .addBearerAuth()
+  .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'Authorization',
+      in: 'header',
+    },
+    'access_token',)
   .addServer('http://localhost:3000/', 'Local environment')
   .addTag('Library')
   .build();
