@@ -2,10 +2,11 @@ import { Controller, Get, Logger, Param, Post, Res } from '@nestjs/common';
 import { User } from 'src/common/decorators/user.decorator';
 import { BorrowingsService } from './borrowings.service';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 
 @ApiTags('BORROWING A BOOKS')
+@ApiBearerAuth('access_token')
 @Controller('api/v1/borrowings')
 export class BorrowingsController {
 
